@@ -13,14 +13,12 @@
   }
 }
 
-ul >li {
-  list-style: none;
+ul >li {  
   padding: 10px;
-  border-bottom: 2px solid ;
+  text-decoration: none;
+  /* border-bottom: 2px solid ; */
 }
-ul >li:active {
-  background: red;
-}
+
 
 .App-header {
   background-color: #282c34;
@@ -44,4 +42,16 @@ ul >li:active {
   to {
     transform: rotate(360deg);
   }
+}
+.sides ul > .active{
+  background-color: yellow !important;
+}
+ul :hover{
+  background-color: yellow;
+}
+
+ul > li >a{
+  list-style: none;
+  text-decoration: none;
+  color: red;
 }
