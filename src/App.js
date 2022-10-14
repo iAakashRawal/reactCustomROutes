@@ -1,23 +1,19 @@
-// import logo from './logo.svg';
+import React from 'react';
 import './App.css';
-import { Link, Route, Routes } from 'react-router-dom';
-import { Col, Label, Row } from 'reactstrap';
-import View from './Comp/View';
-import Sidebar from './Comp/Sidebar';
+import { Col, Row } from 'reactstrap';
+// import Sidebar from './Comp/Sidebar';
 import Allroute from './Comp/Allroute';
-import { useState } from 'react';
 
 
 function App() {
-  const [path , setPath] = useState()
   return (
-    <div className="mt-5">
+    <div className="mt-1">
       
       <Row>
-        <Col xs={2}>
+        {/* <Col xs={2} className="p-1 ps-2">
           <Sidebar />
-        </Col>
-        <Col xs={10}>
+        </Col> */}
+        <Col xs={12} className="p-0">
           <div className='p-3 shadow h-100'>
             <Allroute />
           </div>

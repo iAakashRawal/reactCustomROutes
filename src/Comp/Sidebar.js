@@ -3,19 +3,15 @@ import { Link, useLocation } from 'react-router-dom'
 import './../App.css';
 
 const Sidebar = () => {
-    const locate = useLocation().pathname
-    console.log(locate)
-    const data = {
-        name : "100nu",
-        Lname : "rawal"
-    }
+    const locate = useLocation().pathname    
+    
     return (
         <div>
-            <div className=' shadow'>
+            <div className='shadow' style={{height:720}}>
                 <nav className='sides'>
                     <ul className='ps-0'>
-                        <li className={locate === "/" ? "active ps-3" : "ps-3"}>
-                            <Link to={"/"}  ><i className="fa- fa-home text-info"></i>Home</Link>
+                        <li className={locate === "/Registration" ? "active ps-3" : "ps-3"}>
+                            <Link to={"/Registration"}  ><i className="fa- fa-home text-info"></i>Registration</Link>
                         </li>
                         <li className={locate === "/view" ? "active ps-3" : "ps-3"}>
                             <Link className={'link'} to= "/view">
