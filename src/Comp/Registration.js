@@ -11,20 +11,23 @@ const Registration = () => {
         mobile: "",
         cd: ""
     })
-    const [firstNameError, setFirstNameError] = useState()
+    const [Step1, setStep1] = useState(true)
+    const [Step2, setStep2] = useState(false)
+    const [Step3, setStep3] = useState(false)
+    const [firstNameError, setFirstNameError] = useState(false)
     const [emailError, setEmailError] = useState()
     const [dateError, setDateError] = useState()
+    const [cdError, setcdError] = useState()
     const [mobileError, setMobileError] = useState()
     const [resMobile, setResMobile] = useState()
     const [resMobiles, setResMobiles] = useState()
     const [resDate, setResDate] = useState()
-    const [val, setVal] = useState()
-    const [formCheck, setFormCheck] = useState(false)
+    const [val, setVal] = useState()    
     const errorMessage = "Please Enter"
-
+    const getUsersTest = localStorage.getItem("UsersTest")
     const divElement = useRef();
 
-
+    console.log("user▬", JSON.parse(getUsersTest))
     const phoneNumber = user?.mobile !== undefined ? parsePhoneNumber(user?.mobile, val) : parsePhoneNumber("9131412340", val)
     console.log("phoneNumber", phoneNumber)
     // console.log(phoneNumber.metadata.countries)
@@ -44,6 +47,8 @@ const Registration = () => {
             setEmailError(errorMessage + " Email")
         } if (!user?.dob) {
             setDateError(errorMessage + "Date of birth")
+        } if (!user?.cd) {
+            setcdError("Country")
         } if (!user?.mobile) {
             setMobileError(errorMessage + " mobile")
         } if (user?.firstName && user?.Email && user?.mobile)
@@ -81,8 +86,12 @@ const Registration = () => {
         clearErrorHandler()
         e.preventDefault()
         setUser({ ...user, [name]: value })
-        setVal(value)
 
+        if (name === "cd") {
+            setVal(value)
+        } else {
+            setVal("Select Country")
+        }
         user.mobile ? setResMobile(value) : setResMobile("")
         if (resMobile !== undefined) {
             resMobile.length > 9 ? setResMobiles("Plese Enter 10 Digit Mobile") : setResMobiles("")
@@ -97,24 +106,50 @@ const Registration = () => {
         setEmailError("")
         setDateError("")
         setMobileError("")
+        setcdError("")
     }
 
-    const createUserMethod = e => {
+    const createUserMethod = (e, c) => {
         e.preventDefault();
-        // formValidation()
-        if (formValidation()) {
-            // toast.error("Hellow")
-        } else {
-            // toast.error("nooooooo")
+        console.log("objecte", c)
+
+        if (c === "nexttt" || formValidation()) {
+            setStep1(false)
+            setStep2(true)
+        } if (c === "backtf") {            
+            setStep1(true)
+            setStep2(false)
+        } if (c === "backts") {            
+            setStep2(true)
+            setStep3(false)
+        }if (c === "nextttr") {            
+            setStep2(false)
+            setStep3(true)
+        } if (c === "create" && formValidation()) {
+            localStorage.setItem(["UsersTest", JSON.stringify([getUsersTest, user])])
         }
+
+        // if (formValidation()) {
+        //     // toast.error("Hellow")
+        // } else {
+        //     // toast.error("nooooooo")
+        // }
     }
 
-    const setFormChecks = (e) => {
+    const setFormChecks = (formCheckEvent) => {
         console.log("object", divElement.current)
-        if (e === "1") {
-            setFormCheck(false)
-        } else {
-            setFormCheck(true)
+        if (formCheckEvent === "1") {
+            setStep2(false)
+            setStep3(false)
+            setStep1(true)
+        } if (formCheckEvent === "2") {
+            setStep2(true)
+            setStep3(false)
+            setStep1(false)
+        } if (formCheckEvent === "3") {
+            setStep2(false)
+            setStep3(true)
+            setStep1(false)
         }
     }
 
@@ -126,24 +161,33 @@ const Registration = () => {
                 <div className='p-5 pt-0  d-flex justify-content-center'>
                     <button
                         type="button"
-                        className={!formCheck ? "btn-success btn rounded-circle" : "btn rounded-circle btn-outline-success"}
+                        className={Step1 ? "btn-info btn rounded-circle" : "btn rounded-circle btn-outline-info"}
                         onClick={() => { let e = "1"; setFormChecks(e) }}
                     >
                         1
                     </button>
-                    <label className=''>__________</label>
+                    <label className='text-info'>__________</label>
                     <button
                         type="button"
-                        className={formCheck ? "btn-success btn rounded-circle" : "btn rounded-circle btn-outline-success"}
+                        className={Step2 ? "btn-info btn rounded-circle" : "btn rounded-circle btn-outline-info"}
                         onClick={() => { let e = "2"; setFormChecks(e) }}
 
                     >
                         2
                     </button>
+                    <label className='text-info'>__________</label>
+                    <button
+                        type="button"
+                        className={Step3 ? "btn-info btn rounded-circle" : "btn rounded-circle btn-outline-info"}
+                        onClick={() => { let e = "3"; setFormChecks(e) }}
+
+                    >
+                        3
+                    </button>
                 </div>
 
                 {
-                    !formCheck ? (
+                    Step1 ? (
                         <Row className='p-5 pt-0'>
                             <Col xs={12}>
                                 <Label>firstName</Label>
@@ -210,7 +254,15 @@ const Registration = () => {
                             <Col xs={12}>
                                 <Row>
                                     <Col xs={2} className="pe-1">
-                                        <select name='cd' className='form-control' onChange={e => mobileCheck(e)}>
+                                        <select
+                                            name='cd'
+                                            onChange={e => mobileCheck(e)}
+                                            className={
+                                                !mobileError
+                                                    ? "form-control"
+                                                    : "form-control border border-danger"
+                                            }
+                                        >
                                             <option value={`6`}>{val}</option>
                                             {Countries?.map((elem, ks) => {
                                                 return (
@@ -220,6 +272,9 @@ const Registration = () => {
                                                 )
                                             })}
                                         </select>
+                                        {cdError ? (
+                                            <div className="errorDiv text-danger">{cdError}</div>
+                                        ) : null}
                                     </Col>
                                     <Col xs={10} className="p-0">
                                         <Input
@@ -248,16 +303,14 @@ const Registration = () => {
                                 </Row>
 
                             </Col>
-                            <div>
-
-
+                            <div className=''>
                                 <button
                                     type="button"
-                                    className="btn btn-outline-success mt-5 mb-5 w-50"
-                                    onClick={e => createUserMethod(e)}
+                                    className="float-end btn btn-outline-info mt-5 mb-5 w-25"
+                                    onClick={e => createUserMethod(e, "nexttt")}
                                 >
                                     <i className="fa-duotone fa-address-book"></i>
-                                    Create User
+                                    Next
                                 </button>
                             </div>
                             {/* <pre>
@@ -273,13 +326,12 @@ const Registration = () => {
                             </pre> */}
                         </Row>
                     )
-                        : (
-
+                        : Step2 ? (
                             <Row className='p-5 pt-0'>
                                 <Col xs={12}>
                                     <Label>Degree</Label>
                                     <Input
-                                        name="firstName"
+                                        name="Degree"
                                         type="text"
                                         className="form-control"
                                         // onFocus={clearErrorHandler}
@@ -296,8 +348,8 @@ const Registration = () => {
 
                                     <Label>Address</Label>
                                     <Input
-                                        name="Email"
-                                        type="email"
+                                        name="Address"
+                                        type="text"
                                         className="form-control"
                                         // onFocus={clearErrorHandler}
                                         onChange={e => handleChange(e)}
@@ -315,7 +367,7 @@ const Registration = () => {
                                 <Label>Permanent Address</Label>
                                 <Col xs={12}>
                                     <Input
-                                        name="dob"
+                                        name="pAddress"
                                         type="text"
                                         className="form-control"
                                         // onFocus={clearErrorHandler}
@@ -337,7 +389,53 @@ const Registration = () => {
                                 <Label>Qualifications</Label>
                                 <Col xs={12}>
                                     <Input
-                                        name="dob"
+                                        name="Qualifications"
+                                        type="text"
+                                        className="form-control"
+                                        // onFocus={clearErrorHandler}
+                                        onChange={e => handleChange(e)}
+                                    // invalid={dateError ? true : (resDate ? true : false)}
+                                    />
+                                    {/* {
+                                    dateError ? (
+                                        <FormFeedback type="invalid">
+                                            {dateError}
+                                        </FormFeedback>
+                                    ) :
+                                        <FormFeedback type="invalid">
+                                            {resDate}
+                                        </FormFeedback>
+                                } */}
+
+
+                                </Col>
+
+                                <div>
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-info mt-5 ms-2 mb-5 float-end w-25"
+                                        onClick={e => createUserMethod(e, "nextttr")}
+                                    >
+                                        <i className="fa-duotone fa-address-book"></i>
+                                        Next
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-info  mt-5 mb-5 float-end"
+                                        onClick={e => createUserMethod(e, "backtf")}
+                                    >
+                                        <i className="fa-duotone fa-address-book"></i>
+                                        back
+                                    </button>
+                                </div>
+
+                            </Row>
+                        ) : Step3 ? (
+                            <Row className='p-5 pt-0'>
+                                <Label>City</Label>
+                                <Col xs={12}>
+                                    <Input
+                                        name="pAddress"
                                         type="text"
                                         className="form-control"
                                         // onFocus={clearErrorHandler}
@@ -355,22 +453,100 @@ const Registration = () => {
                                             </FormFeedback>
                                     }
 
+                                </Col>
+                                <Label>District</Label>
+                                <Col xs={12}>
+                                    <Input
+                                        name="Qualifications"
+                                        type="text"
+                                        className="form-control"
+                                        // onFocus={clearErrorHandler}
+                                        onChange={e => handleChange(e)}
+                                    // invalid={dateError ? true : (resDate ? true : false)}
+                                    />
+                                    {/* {
+                                    dateError ? (
+                                        <FormFeedback type="invalid">
+                                            {dateError}
+                                        </FormFeedback>
+                                    ) :
+                                        <FormFeedback type="invalid">
+                                            {resDate}
+                                        </FormFeedback>
+                                } */}
+
+
+                                </Col>
+
+                                <Label>Capital</Label>
+                                <Col xs={12}>
+                                    <Input
+                                        name="Qualifications"
+                                        type="text"
+                                        className="form-control"
+                                        // onFocus={clearErrorHandler}
+                                        onChange={e => handleChange(e)}
+                                    // invalid={dateError ? true : (resDate ? true : false)}
+                                    />
+                                    {/* {
+                                    dateError ? (
+                                        <FormFeedback type="invalid">
+                                            {dateError}
+                                        </FormFeedback>
+                                    ) :
+                                        <FormFeedback type="invalid">
+                                            {resDate}
+                                        </FormFeedback>
+                                } */}
+
+
+                                </Col>
+
+                                <Label>Village</Label>
+                                <Col xs={12}>
+                                    <Input
+                                        name="Qualifications"
+                                        type="text"
+                                        className="form-control"
+                                        // onFocus={clearErrorHandler}
+                                        onChange={e => handleChange(e)}
+                                    // invalid={dateError ? true : (resDate ? true : false)}
+                                    />
+                                    {/* {
+                                    dateError ? (
+                                        <FormFeedback type="invalid">
+                                            {dateError}
+                                        </FormFeedback>
+                                    ) :
+                                        <FormFeedback type="invalid">
+                                            {resDate}
+                                        </FormFeedback>
+                                } */}
+
 
                                 </Col>
 
                                 <div>
                                     <button
                                         type="button"
-                                        className="btn btn-outline-success mt-5 mb-5 w-50"
-                                        onClick={e => createUserMethod(e)}
+                                        className="btn btn-info mt-5 ms-2 mb-5 float-end w-25"
+                                        onClick={e => createUserMethod(e, "create")}
                                     >
                                         <i className="fa-duotone fa-address-book"></i>
                                         Create User
                                     </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-info  mt-5 mb-5 float-end"
+                                        onClick={e => createUserMethod(e, "backts")}
+                                    >
+                                        <i className="fa-duotone fa-address-book"></i>
+                                        back
+                                    </button>
                                 </div>
 
                             </Row>
-                        )
+                        ) : <h1>Empty</h1>
                 }
             </Form >
         </div >
